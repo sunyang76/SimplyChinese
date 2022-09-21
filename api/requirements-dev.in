@@ -1,8 +1,8 @@
-
+alembic
 black
 flake8
 jupyterlab
 pip-tools
 pre-commit
-rope
 pytest
+rope

@@ -181,3 +181,4 @@ ui/npm-debug.log*
 ui/uiyarn-debug.log*
 ui/yarn-error.log*
 .vscode
+api/.env

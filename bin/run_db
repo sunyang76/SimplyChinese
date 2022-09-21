@@ -1,0 +1,15 @@
+#!/bin/bash
+DIR=$HOME/data/sc_data
+if [ ! -d "$DIR" ]; then
+    echo "create directory - $DIR"
+    mkdir -p $DIR
+fi
+
+docker run -d -v $DIR:/var/lib/postgresql/data/pgdata/ \
+-e POSTGRES_USER=$DB_USER \
+-e POSTGRES_PASSWORD=$DB_PASSWORD \
+-e POSTGRES_DB=$DB_NAME \
+-e PGDATA=/var/lib/postgresql/data/pgdata \
+-p 5432:5432 \
+--name scdb \
+postgres
