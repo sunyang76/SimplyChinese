@@ -2,3 +2,7 @@ fastapi
 psycopg2-binary
 SQLAlchemy
 uvicorn[standard]
+pandas
+google-api-python-client
+google-auth-oauthlib 
+google-auth-httplib2
