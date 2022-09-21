@@ -180,3 +180,4 @@ ui.env.production.local
 ui/npm-debug.log*
 ui/uiyarn-debug.log*
 ui/yarn-error.log*
+.vscode
