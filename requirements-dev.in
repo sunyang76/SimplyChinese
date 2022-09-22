@@ -6,3 +6,4 @@ pip-tools
 pre-commit
 pytest
 rope
+sqlacodegen
