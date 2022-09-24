@@ -1,8 +1,9 @@
 fastapi
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib 
+pandas
 psycopg2-binary
+pyjwt
 SQLAlchemy
 uvicorn[standard]
-pandas
-google-api-python-client
-google-auth-oauthlib 
-google-auth-httplib2
