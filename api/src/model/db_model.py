@@ -10,11 +10,20 @@ metadata = Base.metadata
 class Account(Base):
     __tablename__ = 'account'
 
-    id = Column(Integer, primary_key=True, server_default=text("nextval('account_id_seq'::regclass)"))
+    account_id = Column(Integer, primary_key=True, server_default=text("nextval('account_account_id_seq'::regclass)"))
     email = Column(String(100), nullable=False, unique=True)
     name = Column(String(100), nullable=False)
-    create_at = Column(DateTime, server_default=text("now()"))
-    update_at = Column(DateTime, server_default=text("now()"))
+    created_at = Column(DateTime, server_default=text("timezone('utc'::text, CURRENT_TIMESTAMP)"))
+    updated_at = Column(DateTime, server_default=text("timezone('utc'::text, CURRENT_TIMESTAMP)"))
+
+
+class AccountRole(Base):
+    __tablename__ = 'account_role'
+
+    role_id = Column(Integer, primary_key=True, server_default=text("nextval('account_role_role_id_seq'::regclass)"))
+    name = Column(String(100), nullable=False, unique=True)
+    created_at = Column(DateTime, server_default=text("timezone('utc'::text, CURRENT_TIMESTAMP)"))
+    updated_at = Column(DateTime, server_default=text("timezone('utc'::text, CURRENT_TIMESTAMP)"))
 
 
 class CourseLevel(Base):
@@ -23,21 +32,33 @@ class CourseLevel(Base):
     id = Column(Integer, primary_key=True, server_default=text("nextval('course_level_id_seq'::regclass)"))
     level = Column(Integer, unique=True)
     name = Column(String(100), nullable=False, unique=True)
-    create_at = Column(DateTime, server_default=text("now()"))
-    update_at = Column(DateTime, server_default=text("now()"))
+    created_at = Column(DateTime, server_default=text("now()"))
+    updated_at = Column(DateTime, server_default=text("now()"))
 
 
-class AccountLogin(Base):
-    __tablename__ = 'account_login'
+class AccountAccessCode(Base):
+    __tablename__ = 'account_access_code'
 
-    id = Column(Integer, primary_key=True, server_default=text("nextval('account_login_id_seq'::regclass)"))
-    account_id = Column(ForeignKey('account.id'), nullable=False, unique=True)
+    id = Column(Integer, primary_key=True, server_default=text("nextval('account_access_code_id_seq'::regclass)"))
+    account_id = Column(ForeignKey('account.account_id'), nullable=False, unique=True)
     keycode = Column(String(100), nullable=False)
     passcode = Column(Integer, nullable=False)
-    create_at = Column(DateTime, server_default=text("now()"))
-    expire_at = Column(DateTime, index=True, server_default=text("now()"))
+    created_at = Column(DateTime, nullable=False, server_default=text("timezone('utc'::text, CURRENT_TIMESTAMP)"))
+    expire_at = Column(DateTime, nullable=False, index=True, server_default=text("(timezone('utc'::text, CURRENT_TIMESTAMP) + ((10)::double precision * '00:01:00'::interval))"))
 
     account = relationship('Account', uselist=False)
+
+
+class AccountRoleAssignment(Base):
+    __tablename__ = 'account_role_assignment'
+
+    assignment_id = Column(Integer, primary_key=True, server_default=text("nextval('account_role_assignment_assignment_id_seq'::regclass)"))
+    account_id = Column(ForeignKey('account.account_id'), nullable=False, unique=True)
+    role_id = Column(ForeignKey('account_role.role_id'), nullable=False, unique=True)
+    created_at = Column(DateTime, nullable=False, server_default=text("timezone('utc'::text, CURRENT_TIMESTAMP)"))
+
+    account = relationship('Account', uselist=False)
+    role = relationship('AccountRole', uselist=False)
 
 
 class Course(Base):
@@ -49,7 +70,7 @@ class Course(Base):
     level_id = Column(ForeignKey('course_level.id'), unique=True)
     youtube_link = Column(String(100))
     is_free = Column(Boolean)
-    create_at = Column(DateTime, server_default=text("now()"))
-    update_at = Column(DateTime, server_default=text("now()"))
+    created_at = Column(DateTime, server_default=text("now()"))
+    updated_at = Column(DateTime, server_default=text("now()"))
 
     level = relationship('CourseLevel', uselist=False)

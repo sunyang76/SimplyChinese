@@ -21,8 +21,8 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer, primary_key=True),
         sa.Column("level", sa.Integer, unique=True),
         sa.Column("name", sa.String(100), unique=True, nullable=False),
-        sa.Column("create_at", sa.TIMESTAMP, server_default=sa.func.now()),
-        sa.Column("update_at", sa.TIMESTAMP, server_default=sa.func.now()),
+        sa.Column("created_at", sa.TIMESTAMP, server_default=sa.func.now()),
+        sa.Column("updated_at", sa.TIMESTAMP, server_default=sa.func.now()),
     )
 
     op.bulk_insert(
@@ -42,8 +42,8 @@ def upgrade() -> None:
         sa.Column("level_id", sa.Integer, sa.ForeignKey('course_level.id'), unique=True),
         sa.Column("youtube_link", sa.String(100), nullable=True),
         sa.Column("is_free", sa.Boolean, nullable=True),
-        sa.Column("create_at", sa.DateTime, server_default=sa.func.now()),
-        sa.Column("update_at", sa.DateTime, server_default=sa.func.now()),
+        sa.Column("created_at", sa.DateTime, server_default=sa.func.now()),
+        sa.Column("updated_at", sa.DateTime, server_default=sa.func.now()),
     )
 
 

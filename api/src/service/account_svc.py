@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from common.db.decorator import session_manager
 from common.db.base import object_as_dict
 from model.db_model import Account
-from model.db_model import AccountLogin
+from model.db_model import AccountAccessCode
 import sqlalchemy as sa
 import setting
 
@@ -27,7 +27,7 @@ def delete(email, session=None):
 
 
 @session_manager(setting.SCDB_CONNECT_STRING)
-def register(email, name, session=None):
+def signup(email, name, session=None):
     email = email.lower()
 
     if not exists(email, session=session):
@@ -52,11 +52,12 @@ def login(email, keycode=None, passcode=None, session=None):
     existing_account = session.query(Account).filter(Account.email == email).first()
     if existing_account:
         login_rec = (
-            session.query(AccountLogin)
+            session.query(AccountAccessCode)
             .filter(
-                sa.and_(AccountLogin.account_id == existing_account.id),
+                sa.and_(AccountAccessCode.account_id == existing_account.account_id),
                 sa.or_(
-                    AccountLogin.keycode == keycode, AccountLogin.passcode == passcode
+                    AccountAccessCode.keycode == keycode,
+                    AccountAccessCode.passcode == passcode,
                 ),
             )
             .first()
@@ -70,20 +71,24 @@ def login(email, keycode=None, passcode=None, session=None):
 @session_manager(setting.SCDB_CONNECT_STRING)
 def generate_login_code(email, session=None):
     existing_account = session.query(Account).filter(Account.email == email).first()
-    create_at = datetime.utcnow()
-    expire_at = create_at + timedelta(minutes=10)
+    created_at = datetime.utcnow()
+    expire_at = created_at + timedelta(minutes=10)
     if existing_account:
-        session.query(AccountLogin).filter(
-            AccountLogin.account_id == existing_account.id
+        session.query(AccountAccessCode).filter(
+            AccountAccessCode.account_id == existing_account.account_id
         ).delete()
-        new_login_rec = AccountLogin(
-            account_id=existing_account.id,
+        new_login_rec = AccountAccessCode(
+            account_id=existing_account.account_id,
             keycode=uuid.uuid1().hex,
             passcode=random.randrange(100000, 999999),
-            create_at=create_at,
+            created_at=created_at,
             expire_at=expire_at,
         )
         session.add(new_login_rec)
         return object_as_dict(new_login_rec)
     else:
         return None
+
+
+def create_jwt_token(email, name, exp):
+    pass
