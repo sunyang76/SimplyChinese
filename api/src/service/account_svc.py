@@ -5,6 +5,11 @@ from common.db.decorator import session_manager
 from common.db.base import object_as_dict
 from model.db_model import Account
 from model.db_model import AccountAccessCode
+from datetime import timezone
+from datetime import datetime
+from datetime import timedelta
+import jwt
+
 import sqlalchemy as sa
 import setting
 
@@ -90,5 +95,10 @@ def generate_login_code(email, session=None):
         return None
 
 
-def create_jwt_token(email, name, exp):
-    pass
+def create_jwt_token(email, name, exp_in_seconds):
+    iat = datetime.now(tz=timezone.utc)
+    exp = iat + timedelta(seconds=exp_in_seconds)
+    payload = {"email": email, "name": name, "iat": iat, "exp": exp}
+
+    token = jwt.encode(payload, "secret")
+    return token
